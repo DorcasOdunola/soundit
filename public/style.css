@@ -1,0 +1,131 @@
+.upload_button {
+    background-color: rgba(152,26,19, 1) !important;
+    border-radius: 20px !important;
+    width: 70% !important;
+    color: white !important;
+     box-shadow: none !important;
+}
+
+.upload_button:hover {
+    border: 3px solid rgba(152,26,19, 1) !important;
+    background-color: white !important;
+    color: rgba(152,26,19, 1) !important;
+    transition: 0.2s;
+    font-weight: 700 !important;
+}
+
+.upload_button:focus {
+    outline: none !important;
+}
+
+a {
+    color: white !important;
+}
+
+a:hover {
+    color: rgba(152,26,19, 1) !important;
+}
+
+a:active {
+    color: white !important;
+}
+
+label {
+    color: rgba(255, 255, 255, 0.5) !important;
+}
+
+audio::-webkit-media-controls-panel {
+    background-color: rgba(33,37,41, 1);
+    border-radius: 5px !important;
+}
+
+audio::-webkit-media-controls-play-button {
+    background-color: #B1D4E0;
+    border-radius: 50%;
+}
+
+audio::-webkit-media-controls-play-button {
+    background-color: rgba(177,212,224, 1);
+}
+
+.signIn {
+    background-color: rgba(152,26,19, 1) !important;
+    color: white !important;
+    font-weight: 600;
+    box-shadow: none !important;
+}
+
+.signUp {
+    background-color: white !important;
+    color: rgba(152,26,19, 1) !important;
+    font-weight: 600;
+    box-shadow: none !important;
+}
+
+::-webkit-scrollbar{
+    width: 7px;
+}
+
+input {
+   background-color: rgba(33,37,41, 0.4) !important;
+   color: rgba(255, 255, 255, 0.5) !important;
+}
+
+select {
+    background-color: rgba(33,37,41, 0.4) !important;
+    color: rgba(255, 255, 255, 0.5) !important;
+ }
+/* .content::-webkit-scrollbar-thumb{
+    background-color: #0A0048;
+    border-radius: 20px;
+}
+.content::-webkit-scrollbar-track{
+    box-shadow: inset 0 0 2px #0A0048;
+    border-radius: 60px;
+} */
+
+/* .signIn:hover {
+    background-color: white !important;
+    color: rgba(152,26,19, 1) !important;
+    font-weight: 600;
+}
+
+.signUp:hover {
+    background-color: rgba(152,26,19, 1) !important;
+    color: white !important;
+    font-weight: 600;
+} */
+
+.sidenav {
+    margin-top: 130px !important;
+}
+
+button {
+    box-shadow: none !important;
+}
+
+.sidenav-mobile{
+    height: 100vh;
+    max-height: 100vh;
+    overflow-y: scroll;
+    width: 0%;
+    background-color: rgba(13,15,16, 1); 
+    /* border-right: 1px solid rgba(255, 255, 255, 0.3); */
+    z-index: 1000;
+    top: 1;
+    left: 0;
+    /* overflow-x: hidden; */
+    transition: 0.3s;
+    transition-timing-function: linear;
+    position: fixed;
+  }
+
+@media only screen and (min-width: 768px) {
+    .sidenav {
+        margin-top: 80px !important;
+    }
+
+    .toside {
+        padding-left: 70% !important;
+    }
+ }

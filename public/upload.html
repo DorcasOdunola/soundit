@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Soundit</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+        <script src="https://kit.fontawesome.com/df954b8281.js" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js" integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF" crossorigin="anonymous"></script>
+        <link rel="stylesheet" href="style.css">
+    </head>
+    <body style="background-color: black;">
+        <div class="container-fluid">
+            <include src="nav.html"></include>
+            <div class="row w-100 sidenav" style="height: 89vh;">
+                <div class="col-12 col-md-2 d-block d-md-none">
+                    <include src="sidenav.html"></include>
+                </div>
+                <div class="col-12 col-md-2 d-none d-md-block" style="border-right: 1px solid rgba(255, 255, 255, 0.3);">
+                    <include src="sidenav.html"></include>
+                </div>
+                <div class="col-12 col-md-10" style="height: 85vh !important; overflow: auto !important;">
+                    <div class="row p-5">
+                        <div id="uploading" class="col-12 col-md-8 mx-auto text-white rounded p-2" style="background-color: rgba(33,37,41, 0.4); display: none;">
+                            <p id="theName" class="text-center"></p>
+                            <a href="dashboard.html" id="viewSongs" class="text-center"></a>
+                            <div class="progress mt-3" id="uploadProgress" style="height: 6vh; visibility: hidden;">
+                                <div class="progress-bar progress-bar-striped progress-bar-animated bg-success" role="progressbar" id="progressBar" style="width: 0%; height: 10vh;">
+                                  <span id="progressSpan" class="display-6 pb-4">0%</span>
+                                  <!-- style="width: 0%;" -->
+                               </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-8 mx-auto shadow mt-3 p-4" id="upload_song" style="background-color: rgba(33,37,41, 0.4); display:none">
+                            <!-- <div class="p-4" > -->
+                                <div class="row">
+                                    <div class="w-100 w-md-50">
+                                        <label for="" class="form-label">Artist</label>
+                                        <input id="artistInp" name="artist" style="height: 40px !important" type="text" placeholder="Artist" class="form-control mb-2 shadow-sm">
+                                    </div>
+                                    <div class="w-100 w-md-50">
+                                        <label for="" class="form-label">Song Title</label>
+                                        <input id="songTitle" name="" style="height: 40px !important" type="text" placeholder="Song Title" class="form-control mb-2 shadow-sm" required>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="w-100 w-md-50">
+                                        <label for="" class="form-label">Released Date</label>
+                                        <input id="dateInp" name="" style="height: 40px !important" type="date" class="form-control mb-2 shadow-sm" required>
+                                    </div>
+                                    <div class="w-100 w-md-50">
+                                        <label for="" class="form-label">Genres</label>
+                                        <select name="genres" id="genresInp" class="form-control">
+                                            <option value="Gospel">Gospel</option>
+                                            <option value="Reaggae">Reaggae</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+
+                                <!-- <input id="genresInp" name="genres" style="height: 40px !important" type="text" placeholder="Type of Song" class="form-control mb-2 shadow-sm" minlength="6" required> -->
+
+                                <label for="" class="form-label">Artwork(Song image)</label>
+                                <input id="artworkInp" name="image" style="height: 40px !important" type="file" class="form-control mb-2 shadow-sm" accept=".png, .jpg, .jpeg" required>
+
+                                <label for="" class="form-label">Upload Songs</label>
+                                <input id="songInp" name="password" style="height: 40px !important" type="file" class="form-control mb-2 shadow-sm" minlength="6" required>
+
+                                <button class="btn signIn w-50 mx-auto float-end mb-3 mt-3" onclick="upload()" >Upload</button>
+                            <!-- </div> -->
+                            
+                        </div>
+                        <div id="signInRes" class="text-center text-white p-5 text-white" style="background-color: rgba(33,37,41, 0.4); display: none;">
+                            <h5>You need to sign in before you upload a song!!!</h5>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+        <!-- <script src="index.js" type="module"></script> -->
+        <script type="module">
+            // Import the functions you need from the SDKs you need
+            import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
+            import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js";
+            import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
+            import { getStorage, ref as stRef, uploadBytesResumable } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-storage.js";
+
+            // import { initializeApp } from "https://www.gstatic.com/firebasejs/9.7.0/firebase-app.js";
+            // import { getAuth, createUserWithEmailAndPassword } from "firhttps://www.gstatic.com/firebasejs/9.7.0/firebase-auth.js";
+            // TODO: Add SDKs for Firebase products that you want to use
+            // https://firebase.google.com/docs/web/setup#available-libraries
+          
+            // Your web app's Firebase configuration
+            const firebaseConfig = {
+              apiKey: "AIzaSyDxQmO2S55R9JiCWs8qDaqAMPw-0OqWBT8",
+              authDomain: "soundit-e65d8.firebaseapp.com",
+              projectId: "soundit-e65d8",
+              storageBucket: "soundit-e65d8.appspot.com",
+              messagingSenderId: "1072890351086",
+              appId: "1:1072890351086:web:2b7ad4feba1be2887592ff"
+            };
+            // Initialize Firebase
+            const app = initializeApp(firebaseConfig);
+            const db = getDatabase();
+            const auth = getAuth();
+            const storage = getStorage();
+
+            upload_song.style.display = "none";
+            signInRes.style.display = "none";
+
+            let open = false;
+
+            function forSideNav () {
+                if (open == true) {
+                    open = false;
+                    document.getElementById("sidenav-mobile").style.width = "80%";
+                    document.getElementById("sidenav-mobile").style.padding = "20px";
+                    } else {
+                    open = true;
+                    document.getElementById("sidenav-mobile").style.width= "0";
+                    document.getElementById("sidenav-mobile").style.padding = "0px"
+                }
+            }
+            
+            // authenticate.style.display = "none";
+            // userDet.style.display = "none";
+            // display_sign_up.style.display = "none";
+
+            var email;
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    user_email.innerText = user.email
+                    email = user.email;
+                    authenticate.style.display = "none";
+                    userDet.style.display = "block";
+                    upload_song.style.display = "block";
+                    signInRes.style.display = "none";                   
+                } else {
+                    upload_song.style.display = "none";
+                    document.getElementById('signInRes').style.display = "block";
+                    authenticate.style.display = "block";
+                    userDet.style.display = "none";
+                    // signInRes.style.display = "block";
+                }
+            });
+
+
+
+            var dIndex = 0;
+            var dRef = ref(db, "users");
+            var allUsers = [];
+            let username = "";
+            onValue(dRef, function(snapshot) {
+                allUsers = snapshot.val();
+                console.log(allUsers);
+                if (allUsers) {
+                    dIndex = allUsers.length;
+                    let findUser = allUsers.find(user => user.email == email);
+                    username = findUser.username;
+                    console.log(username);
+                } else {
+                    dIndex = 0;
+                }
+            })
+
+
+            
+            var nextIndex = 0;
+            var firstRef = ref(db, "files");
+            var allFiles = [];
+            onValue(firstRef, function(snapshot) {
+                allFiles = snapshot.val();
+                if (allFiles) {
+                   nextIndex = allFiles.length; 
+                } else {
+                    nextIndex = 0
+                }
+            })
+            
+
+           
+
+
+            function upload () {
+                console.log(username);
+                //files
+                let artwork = artworkInp.files[0];
+                let song = songInp.files[0]; 
+
+                //files details
+                let song_title = songTitle.value;
+                let genres = genresInp.value;
+                let artwork_name = artwork.name;
+                let song_name = song.name;
+                let artist = artistInp.value;
+                let released_date = dateInp.value;
+                let fileObj = {song_title, genres, artwork_name, song_name, email, released_date, artist, uploaded_by: username};
+                let dbRef = ref(db, `files/${nextIndex}`);
+                set(dbRef, fileObj);
+                let imgBucketRef = stRef(storage, `images/${artwork_name}`);
+                uploadBytesResumable(imgBucketRef, artwork);
+                let songBucketRef = stRef(storage, `songs/${song_name}`);
+                // uploadBytesResumable(songBucketRef, song);
+                let uploadSong = uploadBytesResumable(songBucketRef, song);
+                uploadSong.on('state_changed', function(snapshot) {
+                    uploading.style.display = "block";
+                    let totalBytes = snapshot.totalBytes;
+                    let bytesTransferred = snapshot.bytesTransferred;
+                
+
+                    let progress = Math.round((bytesTransferred/totalBytes) * 100);
+                    console.log(progress);
+                    uploadProgress.style.visibility = 'visible';
+                    progressBar.style.width = `${progress}%`
+                    progressSpan.innerHTML = `${progress}%`
+                    theName.innerHTML = song_name;
+                }, function (err) {
+                    console.log(err);
+                }, function () {
+                    progressSpan.innerHTML = "Uploaded Successfully!";
+                    progressBar.classList.add('bg-success');
+                    songTitle.value = "";
+                    artworkInp.value = "";
+                    songInp.value = "";
+                    dateInp.value = "";
+                    genresInp.value = "Select Song Type";
+                    viewSongs.innerHTML = "View all Songs";
+
+                })
+            }
+
+            function signUp () {
+                let username = usernameInp.value;
+                let email = signEmailInp.value;
+                let password = passInp.value;
+                console.log(username, email, password);
+                createUserWithEmailAndPassword(auth, email, password).then((userCredentail) => {
+                    const user = userCredentail.user;
+                    console.log(user, userCredentail);
+                    let userObj = {username, email};
+                    let dbRef = ref(db, `users/${nextIndex}`);
+                    set(dbRef, userObj);
+                    signInWithEmailAndPassword(auth, email, password).then((userCredentail) => {
+                        const user = userCredentail.user;
+                        if (user) {
+                            window.location.reload(); 
+                            user_email.innerText = user.email;  
+                        }
+                    }).catch((error) => {
+                        console.log(error.message);
+                    })
+                }).catch((error) => {
+                   if (error.message == "Firebase: Error (auth/email-already-in-use).") {
+                    res.style.display = "block";
+                        res.innerHTML = `<div class="alert alert-danger fw-bold text-center p-0 mt-1" style="height: 5vh !important;">This email already exist</div>`
+                    } else if (error.message == "Firebase: Password should be at least 6 characters (auth/weak-password).") {
+                        res.style.display = "block";
+                        res.innerHTML = `<div class="alert alert-danger fw-bold text-center p-0 mt-1" style="height: 5vh !important;">Password should be at least 6 characters</div>`
+                    }
+                })
+            }
+
+            function signIn() {
+                let email = emailInp.value;
+                let password = passwordInp.value;
+                console.log(email, password);
+                signInWithEmailAndPassword(auth, email, password).then((userCredentail) => {
+                    const user = userCredentail.user;
+                    if (user) {
+                        window.location.reload(); 
+                        user_email.innerText = user.email;  
+                    }
+                }).catch((error) => {
+                    res.style.display = "block";
+                    res.innerHTML = `<div class="alert alert-danger fw-bold text-center p-0 mt-1" style="height: 5vh !important;">Incorrect details !!!</div>`
+                })
+
+            }
+
+            function display (dis) {
+                if (dis == "signin") {
+                    display_sign_up.style.display = "none";
+                    display_sign_in.style.display = "block";
+                } else if (dis == "signup") {
+                    display_sign_up.style.display = "block";
+                    display_sign_in.style.display = "none";
+                }
+            }
+            
+
+            function logOut () {
+                signOut(auth).then(() => {
+                    authenticate.style.display = "block";
+                    userDet.style.display = "none";
+                    user_email.innerText = "";
+                }).catch((error) => {
+                    console.log("not successfull");
+                });
+            }
+
+            
+            function displayRes () {
+                res.style.display = "none";
+            }
+
+            window.logOut = logOut;
+            window.display = display;
+            window.signUp = signUp;
+            window.signIn = signIn;
+            window.upload = upload;
+            window.forSideNav = forSideNav;
+            window.displayRes = displayRes;
+
+
+            let includes = document.getElementsByTagName('include');
+            for(var i=0; i<includes.length; i++){
+                let include = includes[i];
+                load_file(includes[i].attributes.src.value, function(text){
+                    include.insertAdjacentHTML('afterend', text);
+                    include.remove();
+                });
+            }
+            function load_file(filename, callback) {
+                fetch(filename).then(response => response.text()).then(text => callback(text));
+            }
+            
+            
+          </script>
+        
+    </body>
+</html>

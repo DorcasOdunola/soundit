@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>SOUNDit</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+        <script src="https://kit.fontawesome.com/df954b8281.js" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js" integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF" crossorigin="anonymous"></script>
+        <link rel="stylesheet" href="style.css">
+    </head>
+    <body style="background-color: black">
+        <div class="container-fluid">
+            <include src="nav.html"></include>
+            <div class="row w-100 sidenav" style="height: 89vh;">
+                <div class="col-12 col-md-2 d-block d-md-none">
+                    <include src="sidenav.html"></include>
+                </div>
+                <div class="col-12 col-md-2 d-none d-md-block" style="border-right: 1px solid rgba(255, 255, 255, 0.3);">
+                    <include src="sidenav.html"></include>
+                </div>
+                <div class="col-12 col-md-10" style="height: 85vh !important; overflow: auto !important;">
+                    <div id="userArea" class="p-md-5 m-md-3 text-white">
+                        
+                    </div>
+                    <div id="signInRes" class="text-center text-white p-5 m-3 text-white" style="background-color: rgba(33,37,41, 0.4); display: none;">
+                        <h5>You need to sign in before you can view your profile!!!</h5>
+                    </div>
+
+                    <div id="uploadedSong" class="text-center text-white p-5 m-3 text-white" style="background-color: rgba(33,37,41, 0.4); display: none;">
+                        <h5>You don't have any song uploaded</h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- <script src="index.js" type="module"></script> -->
+        <script type="module">
+            // Import the functions you need from the SDKs you need
+            import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
+		    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
+            import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js";
+            import { getStorage, ref as stRef, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-storage.js";
+            // import { initializeApp } from "https://www.gstatic.com/firebasejs/9.7.0/firebase-app.js";
+            // import { getAuth, createUserWithEmailAndPassword } from "firhttps://www.gstatic.com/firebasejs/9.7.0/firebase-auth.js";
+            // TODO: Add SDKs for Firebase products that you want to use
+            // https://firebase.google.com/docs/web/setup#available-libraries
+          
+            // Your web app's Firebase configuration
+            const firebaseConfig = {
+              apiKey: "AIzaSyDxQmO2S55R9JiCWs8qDaqAMPw-0OqWBT8",
+              authDomain: "soundit-e65d8.firebaseapp.com",
+              projectId: "soundit-e65d8",
+              storageBucket: "soundit-e65d8.appspot.com",
+              messagingSenderId: "1072890351086",
+              appId: "1:1072890351086:web:2b7ad4feba1be2887592ff"
+            };
+            // Initialize Firebase
+            const app = initializeApp(firebaseConfig);
+            const auth = getAuth();
+            const db = getDatabase();
+            const storage = getStorage();
+
+            // document.getElementById('authenticate').style.display = "none";
+            // authenticate.style.display = "none";
+            // userDet.style.display = "none";
+            // display_sign_up.style.display = "none";
+
+            // res.style.display = "none";
+
+            let open = false;
+
+            function forSideNav () {
+                if (open == true) {
+                    open = false;
+                    document.getElementById("sidenav-mobile").style.width = "80%";
+                    document.getElementById("sidenav-mobile").style.padding = "20px";
+                    } else {
+                    open = true;
+                    document.getElementById("sidenav-mobile").style.width= "0";
+                    document.getElementById("sidenav-mobile").style.padding = "0px"
+                }
+            }
+
+
+            // Getting all users
+            var nextIndex = 0;
+            var firstRef = ref(db, "users");
+            var allUsers = [];
+            var email_of_user;
+
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    user_email.innerText = user.email;
+                    email_of_user = user.email;
+                    authenticate.style.display = "none";
+                    userDet.style.display = "block";
+                    signInRes.style.display = "none";
+                } else {
+                    // authenticate.style.display = "block";
+                    signInRes.style.display = "block";
+                    // userDet.style.display = "none";
+                }
+            });
+
+            onValue(firstRef, function(snapshot) {
+                allUsers = snapshot.val();
+                console.log(allUsers, "ALL USERS");
+                console.log(snapshot.val())
+                if (allUsers) {
+                    nextIndex = allUsers.length;
+                    displayUser(allUsers)  
+                } else {
+                    nextIndex = 0;
+                }
+            })
+
+            //Getting all files
+            // var fileRef = ref(db, "files");
+            // var allFiles = [];
+            // onValue(fileRef, function(snapshot) {
+            //     allFiles = snapshot.val();
+            //     if (allFiles) {
+            //        nextIndex = allFiles.length; 
+            //     }
+            // })
+            
+
+           
+
+            function displayUser(allUsers) {
+                let findUser = allUsers.find(user => user.email == email_of_user);
+                console.log(findUser);
+                if (findUser) {
+                    userArea.innerHTML = `
+                    <div class="text-white mb-5" style="background-color: rgba(33,37,41, 0.2)">
+                        <div>
+                            <div class="d-flex">
+                                <div class="text-white">
+                                    <img src="image.jpg" alt="" style="width: 110px; height: 110px; margin-top: -10px;" class="shadow">
+                                </div>
+                                <div class="mt-5 ms-md-4">
+                                    <h5>${findUser.email}</h5>
+                                    <small><i class="text-muted">@${findUser.username}<i></small><br>                                            
+                                </div>
+                            </div>
+                        </div>
+                    </div>`
+                }
+            }
+
+
+            function display (dis) {
+                if (dis == "signin") {
+                    display_sign_up.style.display = "none";
+                    display_sign_in.style.display = "block";
+                } else if (dis == "signup") {
+                    display_sign_up.style.display = "block";
+                    display_sign_in.style.display = "none";
+                }
+            }
+
+            function signUp () {
+                let username = usernameInp.value;
+                let email = signEmailInp.value;
+                let password = passInp.value;
+                console.log(username, email, password);
+                createUserWithEmailAndPassword(auth, email, password).then((userCredentail) => {
+                    const user = userCredentail.user;
+                    console.log(user, userCredentail);
+                    let userObj = {username, email};
+                    let dbRef = ref(db, `users/${nextIndex}`);
+                    set(dbRef, userObj);
+                    signInWithEmailAndPassword(auth, email, password).then((userCredentail) => {
+                        const user = userCredentail.user;
+                        if (user) {
+                            window.location.reload(); 
+                            user_email.innerText = user.email;  
+                        }
+                    }).catch((error) => {
+                        console.log(error.message);
+                    })
+                }).catch((error) => {
+                    if (error.message == "Firebase: Error (auth/email-already-in-use).") {
+                        res.style.display = "block";
+                        res.innerHTML = `<div class="alert alert-danger fw-bold text-center p-0 mt-1" style="height: 5vh !important;">This email already exist</div>`
+                    } else if (error.message == "Firebase: Password should be at least 6 characters (auth/weak-password).") {
+                        res.style.display = "block";
+                        res.innerHTML = `<div class="alert alert-danger fw-bold text-center p-0 mt-1" style="height: 5vh !important;">Password should be at least 6 characters</div>`
+                    }
+                })
+            }
+
+            function signIn() {
+                let email = emailInp.value;
+                let password = passwordInp.value;
+                console.log(email, password);
+                signInWithEmailAndPassword(auth, email, password).then((userCredentail) => {
+                    const user = userCredentail.user;
+                    if (user) {
+                        window.location.reload(); 
+                        user_email.innerText = user.email;  
+                    } else {
+                        console.log(user);
+                    }
+                }).catch((error) => {
+                    console.log(error.message);
+                    res.style.display = "block";
+                    res.innerHTML = `<div class="alert alert-danger fw-bold text-center p-0 mt-1" style="height: 5vh !important;">Incorrect details !!!</div>`
+                })
+
+            }
+
+            
+            function logOut () {
+                signOut(auth).then(() => {
+                    authenticate.style.display = "block";
+                    userDet.style.display = "none";
+                    user_email.innerText = "";
+                }).catch((error) => {
+                    console.log("not successfull");
+                });
+            }
+
+            function displayRes () {
+                res.style.display = "none";
+            }
+
+            window.logOut = logOut;
+            window.display = display;
+            window.signUp = signUp;
+            window.signIn = signIn;
+            window.displayUser = displayUser;
+            window.forSideNav = forSideNav;
+            window.displayRes = displayRes;
+
+
+
+            let includes = document.getElementsByTagName('include');
+            for(var i=0; i<includes.length; i++){
+                let include = includes[i];
+                load_file(includes[i].attributes.src.value, function(text){
+                    include.insertAdjacentHTML('afterend', text);
+                    include.remove();
+                });
+            }
+            function load_file(filename, callback) {
+                fetch(filename).then(response => response.text()).then(text => callback(text));
+            }
+          </script>
+        
+    </body>
+</html>

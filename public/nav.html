@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Document</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    </head>
+    <body>
+        <div class="row shadow-sm fixed-top w-100 p-0 mx-auto mb-5" style="min-height: 10vh; background-color: rgba(33,37,41, 0.4); z-index: 1000 !important;">
+            <div class="col-6 col-md-3 my-auto">
+                <div class="d-flex">
+                    <button class="btn text-white d-block d-md-none" onclick="forSideNav()">
+                        <i class="fa fa-bars" aria-hidden="true"></i>
+                    </button>
+                    <p class="fw-bold mt-3 text-white ps-md-4" style="letter-spacing: 8px; font-size: 22px;">SOUNDit</p>
+                </div>
+            </div>
+            <div class="col-6 col-md-7 mx-auto my-auto">
+                <div class="row">
+                    <div class="col-12 p-0">
+                        <div class="row mx-auto toside">
+                            <div id="authenticate">
+                                <a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#exampleModal" onclick="displayRes()">Sign in/Sign up</a>
+                            </div>
+                            <div class="d-flex mt-2" id="userDet">
+                                <small id="user_email" class="fw-bold text-white"></small>
+                                <!-- <img src="user.png" style="width: 30px; height: 30px;"> -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-lg-2 my-auto justify-content-end">
+                <a href="upload.html" class="nav-link">
+                    <button class="btn upload_button w-100">Upload</button>
+                </a>
+            </div>
+        </div> 
+
+
+        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+            <div class="modal-content" style="background-color: rgba(13,15,16, 1) !important;">
+                <div class="container-fluid border-bottom">
+                    <div class="row">
+                        <div class="col-5 p-3 mx-auto">
+                            <button class="btn signIn w-100" id="sign_in"  onclick="display('signin')">Sign in</button>
+                        </div>
+                        <div class="col-5 p-3 mx-auto">
+                            <button class="btn signUp w-100" id="sign_up"  onclick="display('signup')">Sign Up</button>
+                        </div>
+                        <div class="col-2">
+                            <button type="button text-white" class="btn-close ms-4" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-11 mx-auto" id="display_sign_in">
+                            <label for="" class="form-label">Email</label>
+                            <input id="emailInp" name="email" style="height: 50px !important" type="email" placeholder="Enter your email address" class="form-control mb-2 shadow-sm">
+                            <label for="" class="form-label">Password</label>
+                            <input id="passwordInp" name="password" style="height: 50px !important" type="password" placeholder="Enter your Password" class="form-control mb-2 shadow-sm" minlength="6">
+                            <div class="row mx-auto justify-content-end">
+                                <button class="btn signUp w-50 mt-3" onclick="signIn()">Sign In</button>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="row">
+                        <div class="col-11 mx-auto" id="display_sign_up" style="display: none;">
+                            <div class="row">
+                                <div class="w-50">
+                                    <label for="" class="form-label">Email</label>
+                                    <input id="signEmailInp" name="email" style="height: 50px !important" type="email" placeholder="Enter your email address" class="form-control mb-2 shadow-sm">
+                                </div>
+                                <div class="w-50">
+                                    <label for="" class="form-label">Username</label>
+                                    <input id="usernameInp" name="username" style="height: 50px !important" type="email" placeholder="Enter your usernames" class="form-control mb-2 shadow-sm">
+                                </div>
+                            </div>
+                            <label for="" class="form-label">Password</label>
+                            <input id="passInp" name="password" style="height: 50px !important" type="password" placeholder="Enter your Password" class="form-control mb-2 shadow-sm" minlength="6">
+                            <div class="row mx-auto justify-content-end">
+                                <button class="btn signIn w-50 mt-3" onclick="signUp()">Sign Up</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="res" style="display: none;"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+            </div>
+        </div>
+
+        </script>
+    </body>
+</html>

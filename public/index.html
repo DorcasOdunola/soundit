@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>SOUNDit</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+        <script src="https://kit.fontawesome.com/df954b8281.js" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js" integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF" crossorigin="anonymous"></script>
+        <link rel="stylesheet" href="style.css">
+    </head>
+    <body style="background-color: black">
+        <div class="container-fluid">
+            <include src="nav.html"></include>
+            <div class="row w-100 sidenav" style="height: 89vh;">
+                <div class="col-12 col-md-2 d-block d-md-none">
+                    <include src="sidenav.html"></include>
+                </div>
+                <div class="col-12 col-md-2 d-none d-md-block" style="border-right: 1px solid rgba(255, 255, 255, 0.3);">
+                    <include src="sidenav.html"></include>
+                </div>
+                <div class="col-12 col-md-10" style="height: 85vh !important; overflow: auto !important;">
+                    <div class="mb-5 text-white">
+                        <h3 class="display-6 mt-3 mb-4 ps-2">All Songs</h3>
+                    </div>
+                    <div id="fileArea">
+
+                    </div>
+                </div>
+            </div>
+            <div class="fixed-bottom">
+                <audio src="" controls class="w-100" id="playAudio" style="display: none;"></audio>
+            </div>
+
+            <!-- Button trigger modal -->
+            <!-- <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                Launch demo modal
+            </button> -->
+            
+            <!-- Modal -->
+
+        </div>
+        <!-- <script src="index.js" type="module"></script> -->
+        <script type="module">
+            // Import the functions you need from the SDKs you need
+            import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
+		    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
+            import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js";
+            import { getStorage, ref as stRef, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-storage.js";
+            // import { initializeApp } from "https://www.gstatic.com/firebasejs/9.7.0/firebase-app.js";
+            // import { getAuth, createUserWithEmailAndPassword } from "firhttps://www.gstatic.com/firebasejs/9.7.0/firebase-auth.js";
+            // TODO: Add SDKs for Firebase products that you want to use
+            // https://firebase.google.com/docs/web/setup#available-libraries
+          
+            // Your web app's Firebase configuration
+            const firebaseConfig = {
+              apiKey: "AIzaSyDxQmO2S55R9JiCWs8qDaqAMPw-0OqWBT8",
+              authDomain: "soundit-e65d8.firebaseapp.com",
+              projectId: "soundit-e65d8",
+              storageBucket: "soundit-e65d8.appspot.com",
+              messagingSenderId: "1072890351086",
+              appId: "1:1072890351086:web:2b7ad4feba1be2887592ff"
+            };
+            // Initialize Firebase
+            const app = initializeApp(firebaseConfig);
+            const auth = getAuth();
+            const db = getDatabase();
+            const storage = getStorage();
+
+            // document.getElementById('authenticate').style.display = "none";
+            // authenticate.style.display = "none";
+            // userDet.style.display = "none";
+            // display_sign_up.style.display = "none";
+            let open = false;
+
+            function forSideNav () {
+                if (open == true) {
+                    open = false;
+                    document.getElementById("sidenav-mobile").style.width = "80%";
+                    document.getElementById("sidenav-mobile").style.padding = "20px";
+                    } else {
+                    open = true;
+                    document.getElementById("sidenav-mobile").style.width= "0";
+                    document.getElementById("sidenav-mobile").style.padding = "0px"
+                }
+            }
+
+
+            // Getting all users
+            var nextIndex = 0;
+            var firstRef = ref(db, "users");
+            var allUsers = [];
+            onValue(firstRef, function(snapshot) {
+                allUsers = snapshot.val();
+                if (allUsers) {
+                    nextIndex = allUsers.length;
+                } else {
+                    nextIndex = 0;
+                }
+            })
+
+            //Getting all files
+            var fileRef = ref(db, "files");
+            var allFiles = [];
+            onValue(fileRef, function(snapshot) {
+                allFiles = snapshot.val();
+                if (allFiles) {
+                   displaySong(allFiles);
+                } 
+            })
+
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    user_email.innerText = user.email
+                    authenticate.style.display = "none";
+                    userDet.style.display = "block";
+                } else {
+                    // authenticate.style.display = "block";
+                    userDet.style.display = "none";
+                }
+            });
+
+            function displayRes () {
+                res.style.display = "none";
+            }
+
+
+            function display (dis) {
+                if (dis == "signin") {
+                    display_sign_up.style.display = "none";
+                    display_sign_in.style.display = "block";
+                } else if (dis == "signup") {
+                    display_sign_up.style.display = "block";
+                    display_sign_in.style.display = "none";
+                }
+            }
+
+            function signUp () {
+                let username = usernameInp.value;
+                let email = signEmailInp.value;
+                let password = passInp.value;
+                console.log(username, email, password);
+                createUserWithEmailAndPassword(auth, email, password).then((userCredentail) => {
+                    const user = userCredentail.user;
+                    console.log(user, userCredentail);
+                    let userObj = {username, email};
+                    let dbRef = ref(db, `users/${nextIndex}`);
+                    set(dbRef, userObj);
+                    signInWithEmailAndPassword(auth, email, password).then((userCredentail) => {
+                        const user = userCredentail.user;
+                        if (user) {
+                            window.location.reload(); 
+                            user_email.innerText = user.email;  
+                        }
+                    }).catch((error) => {
+                        console.log(error.message);
+                    })
+                }).catch((error) => {
+                    if (error.message == "Firebase: Error (auth/email-already-in-use).") {
+                        res.innerHTML = `<div class="alert alert-danger fw-bold text-center p-0 mt-1" style="height: 5vh !important;">This email already exist</div>`
+                    } else if (error.message == "Firebase: Password should be at least 6 characters (auth/weak-password).") {
+                        res.innerHTML = `<div class="alert alert-danger fw-bold text-center p-0 mt-1" style="height: 5vh !important;">Password should be at least 6 characters</div>`
+                    }
+                })
+                
+            }
+
+            function signIn() {
+                let email = emailInp.value;
+                let password = passwordInp.value;
+                console.log(email, password);
+                signInWithEmailAndPassword(auth, email, password).then((userCredentail) => {
+                    const user = userCredentail.user;
+                    if (user) {
+                        // window.location.reload(); 
+                        user_email.innerText = user.email;  
+                    }
+                }).catch((error) => {
+                    res.style.display = "block";
+                    res.innerHTML = `<div class="alert alert-danger fw-bold text-center p-0 mt-1" style="height: 5vh !important;">Incorrect details !!!</div>`
+                })
+
+            }
+
+            function displaySong(allFiles) {
+                allFiles.map((file, i) => {
+                    let artwork_name = file.artwork_name;
+                    let song_name = file.song_name;
+                    let image = stRef(storage, `images/${artwork_name}`);
+                    let song = stRef(storage, `songs/${song_name}`);
+                    getDownloadURL(image).then(function(image_url) {
+                        getDownloadURL(song).then(function(song_url) {
+                            fileArea.innerHTML += `
+                            <div class="text-white mb-5" style="background-color: rgba(33,37,41, 0.2)">
+                                <div>
+                                    <div class="d-flex">
+                                        <div class="">
+                                            <img src="${image_url}" alt="" style="width: 120px; height: 120px; margin-top: -10px;" class="shadow">
+                                        </div>
+                                        <div class="mt-5 ms-4">
+                                            <h5>${file.song_title}</h5>
+                                            <small><i class="text-muted">Author:</i> ${file.author}</small><br>
+                                            <small><i class="text-muted">Release Date:</i> ${file.released_date}</small>
+                                            <small class="ms-5"><i class="text-muted">Type:</i> ${file.genres}</small>
+                                        </div>
+                                    </div>
+                                    <button class="btn" style="box-shadow: none !important" onclick="playEachSong('${song_url}', ${i})">
+                                        <i class="fa-solid fa-play text-white" id="forPlay${i}"></i>
+                                        <i class="fa-solid fa-pause text-white" id="forPause${i}" style="display: none"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            `
+                        })
+                    })
+                })
+                
+            }
+            // <audio src="${song_url}" controls class="w-100 text-dark" style="height: 7vh;"></audio>
+
+            var play = true;
+            var previousIn;
+            var played = false;
+
+            function playEachSong(song_url, i) {
+                // previousIn = i;
+                // //for changing the icon of the previoused play
+                // let playPrevious =  `forPlay${previousIn}`;
+                // let pausePrevious =  `forPause${previousIn}`
+                // document.getElementById(playPrevious).style.display = "block";
+                // document.getElementById(pausePrevious).style.display = "none";
+                // //end
+
+                // for playing and pausing
+                let forPlay = `forPlay${i}`;
+                let forPause = `forPause${i}`;
+                if (play == true) {
+                    playAudio.style.display = "block";
+                    playAudio.src = song_url;
+                    play = false;
+                    played = true;
+                    playAudio.play();
+                    played = true;
+                    document.getElementById(forPlay).style.display = "none";
+                    document.getElementById(forPause).style.display = "block";
+                } else if (play == false) {
+                    play = true;
+                    playAudio.pause();
+                    document.getElementById(forPlay).style.display = "block";
+                    document.getElementById(forPause).style.display = "none";
+                }
+            }
+            
+            function logOut () {
+                signOut(auth).then(() => {
+                    authenticate.style.display = "block";
+                    userDet.style.display = "none";
+                    user_email.innerText = "";
+                }).catch((error) => {
+                    console.log("not successfull");
+                });
+            }
+
+            window.logOut = logOut;
+            window.display = display;
+            window.signUp = signUp;
+            window.signIn = signIn;
+            window.playEachSong = playEachSong;
+            window.forSideNav = forSideNav;
+            window.displayRes = displayRes;
+
+
+
+            let includes = document.getElementsByTagName('include');
+            for(var i=0; i<includes.length; i++){
+                let include = includes[i];
+                load_file(includes[i].attributes.src.value, function(text){
+                    include.insertAdjacentHTML('afterend', text);
+                    include.remove();
+                });
+            }
+            function load_file(filename, callback) {
+                fetch(filename).then(response => response.text()).then(text => callback(text));
+            }
+          </script>
+        
+    </body>
+</html>
